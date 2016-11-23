@@ -1,4 +1,4 @@
-DEFAULT_META_IMAGE=wildducktheories/y2j
+DEFAULT_META_IMAGE=davidfetter/y2j
 META_IMAGE?=$(DEFAULT_META_IMAGE)
 
 image:

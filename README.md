@@ -29,8 +29,8 @@ This package provides filters for transforming JSON to YAML, YAML to JSON and YA
 YAML to YAML transformations are performed by applying a jq filter to a JSON transformation
 of the YAML input stream with y2j and transforming the resulting JSON stream back to YAML with j2y.
 
-The script will use the local instances of jq, python and the required python modules if they exist locally
-or will use a docker container based on the wildducktheories/y2j image otherwise.
+The script will use the local instances of jq, perl and the required perl modules if they exist locally
+or will use a docker container based on the davidfetter/y2j image otherwise.
 
 #INSTALLATION
 

@@ -2,8 +2,8 @@
 
 set -o pipefail
 
-VERSION=1.1.1
-DEFAULT_META_IMAGE=wildducktheories/y2j
+VERSION=1.2.0
+DEFAULT_META_IMAGE=davidfetter/y2j
 META_IMAGE=${META_IMAGE:-${DEFAULT_META_IMAGE}}
 
 die() {
@@ -80,12 +80,12 @@ version() {
 }
 
 
-python() {
-	PYTHON=$(which python 2>/dev/null)
-	if test -n "$PYTHON" && $PYTHON -c 'import sys, yaml, json;' 2>/dev/null; then
-		$PYTHON "$@"
+perl() {
+	PERL=$(which perl 2>/dev/null)
+	if test -n "$PERL" && $PERL -MYAML::XS -MJSON::XS -MJSON -E 'say' 2>/dev/null; then
+		$PERL "$@"
 	else
-		docker run --rm -i ${META_IMAGE} python "$@"
+		docker run --rm -i ${META_IMAGE} perl "$@"
 	fi
 }
 
@@ -103,15 +103,7 @@ y2j() {
 		shift 1
 		j2y "$@"
 	else
-		read -r -d '' script <<-"EOF"
-		# Python code here prefixed by hard tab
-		import sys, yaml, json;
-		for doc in yaml.load_all(sys.stdin):
-		  json.dump(doc, sys.stdout, indent=4)
-		  print("")
-EOF
-
-		python -c "$script" | (
+        perl -MYAML::XS -MJSON -E 'local $/; print to_json(Load(<>), {pretty => 1, canonical => 1})' | (
 			if test $# -gt 0; then
 				jq "$@"
 			else
@@ -132,7 +124,7 @@ j2y() {
 			else
 				cat
 			fi
-		) | python -c 'import sys, yaml, json; yaml.safe_dump(json.load(sys.stdin), sys.stdout, default_flow_style=False)'
+        ) | perl -MYAML::XS -MJSON::XS -E 'local $/; print Dump(decode_json(<>))'
 	fi
 }
 
